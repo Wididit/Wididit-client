@@ -24,7 +24,7 @@ from wididit import People
 from wididit.utils import userid2tuple
 
 from wididitclient.i18n import _
-from wididitclient.utils import get_qicon
+from wididitclient.utils import get_qicon, log
 
 username = None
 hostname = None
@@ -70,6 +70,7 @@ class LoginWindow(QtGui.QMainWindow):
         self._login.setPlaceholderText(_('login@hostname'))
         # Help text for the login prompt.
         self._login.setToolTip(_('Enter your unique userid.'))
+        self._login.returnPressed.connect(self.on_connect)
         layout.addWidget(self._login)
 
         self._password = QtGui.QLineEdit()
@@ -78,6 +79,7 @@ class LoginWindow(QtGui.QMainWindow):
         # Help text for the password prompt.
         self._password.setToolTip(_('The password for your Wididit account.'))
         self._password.setEchoMode(QtGui.QLineEdit.Password)
+        self._password.returnPressed.connect(self.on_connect)
         layout.addWidget(self._password)
 
         self._validate = QtGui.QPushButton(
@@ -89,7 +91,7 @@ class LoginWindow(QtGui.QMainWindow):
 
         self.show()
 
-    def on_connect(self, event):
+    def on_connect(self, event=None):
         valid = self._callback(self._login.text(), self._password.text())
         if valid:
             self.hide()
