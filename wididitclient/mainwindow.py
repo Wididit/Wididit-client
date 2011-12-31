@@ -37,16 +37,30 @@ class MainWindow(QtGui.QMainWindow):
 
         self.setCentralWidget(TabWidget(self))
 
-        self._timeline = QtGui.QScrollArea(self)
-        self._timeline.setWidgetResizable(True)
 
         # Title of tab containing the timeline.
         title = _('Timeline')
+
+        self._timeline = QtGui.QScrollArea(self)
+        self._timeline.setWidgetResizable(True)
         self.centralWidget().addTab(self._timeline, title)
 
         entries = Entry.Query(get_people().server).shared(True).fetch()
         widget = QtGui.QWidget()
         self._timeline.setWidget(widget)
+        widget.setLayout(EntryListWidget(entries, widget))
+
+
+        # Title of tab containing all entries
+        title = _('All')
+
+        self._all = QtGui.QScrollArea(self)
+        self._all.setWidgetResizable(True)
+        self.centralWidget().addTab(self._all, title)
+
+        entries = Entry.Query(get_people().server, Entry.Query.MODE_ALL).fetch()
+        widget = QtGui.QWidget()
+        self._all.setWidget(widget)
         widget.setLayout(EntryListWidget(entries, widget))
 
         self.show()
