@@ -23,8 +23,11 @@
 from __future__ import with_statement
 
 import os
+from glob import glob
 from distutils.core import setup
 from DistUtilsExtra.command import *
+
+import wididitclient
 
 def recursive_listdir(base_path):
     files = []
@@ -43,15 +46,20 @@ with open('po/POTFILES.in', 'a') as fd:
     fd.write('\n'.join(files))
 
 setup(name='wididitclient',
-      version='0.1',
+      version=wididitclient.__version__,
       description='Wididit client.',
       author='Valentin Lorentz',
       author_email='progval@gmail.com',
       url='http://client.wididit.net/',
       packages=['wididitclient'],
-      requires=['wididit'],
+      requires=['wididit', 'PyQt4'],
+      data_files=[
+            ('share/wididitclient/ui', glob("ui/*.svg")),
+            ],
       cmdclass = {'build': build_extra.build_extra,
                   'build_i18n': build_i18n.build_i18n,
-                 }
+                  'build_icons': build_icons.build_icons
+                 },
+      scripts=['bin/wididit-client'],
 
      )
