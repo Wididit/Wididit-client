@@ -37,11 +37,19 @@ class EntryListLayout(QtGui.QVBoxLayout):
     def __init__(self, entries, parent=None):
         super(EntryListLayout, self).__init__(parent)
 
+        size_policy = QtGui.QSizePolicy(QtGui.QSizePolicy.Ignored)
+        size_policy.setHorizontalPolicy(QtGui.QSizePolicy.Expanding)
+
         for entry in entries:
             item = QtGui.QFrame()
             item.setStyleSheet('background-color: white;');
+            item.setSizePolicy(size_policy)
             item.setLayout(EntryListWidgetItem(entry))
             self.addWidget(item)
+
+        # Take all the trailing space at the end of the scrollarea.
+        widget = QtGui.QWidget()
+        self.addWidget(widget)
 
 class EntryListWidgetItem(QtGui.QGridLayout):
     def __init__(self, entry):
