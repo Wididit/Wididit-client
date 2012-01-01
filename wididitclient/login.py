@@ -1,4 +1,4 @@
-# Copyright (C) 2011, Valentin Lorentz
+# Copyright (C) 2011-2012, Valentin Lorentz
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -48,7 +48,10 @@ def authenticate(callback):
         except:
             return False
         password = new_password
-        return callback(new_userid, new_password)
+        if People(username, hostname, password, connect=True).authenticated:
+            return callback(new_userid, new_password)
+        else:
+            return False
 
     _login_window = LoginWindow(new_callback)
 
@@ -56,6 +59,8 @@ class LoginWindow(QtGui.QMainWindow):
     def __init__(self, callback):
         super(LoginWindow, self).__init__()
         self._callback = callback
+
+        log.debug('Spawning login window.')
 
         # Title of login window.
         self.setWindowTitle(_('Connect to Wididit'))
@@ -91,8 +96,15 @@ class LoginWindow(QtGui.QMainWindow):
 
         self.show()
 
+        log.debug('Login window displayed.')
+
     def on_connect(self, event=None):
+        log.debug('User clicked the authentication button. Validating '
+                'creditentials...')
         valid = self._callback(self._login.text(), self._password.text())
         if valid:
+            log.info('Valid userid and password. Connected.')
             self.hide()
+        else:
+            log.info('Invalid userid or password. Asking authentication again.')
 

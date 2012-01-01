@@ -1,4 +1,4 @@
-# Copyright (C) 2011, Valentin Lorentz
+# Copyright (C) 2011-2012, Valentin Lorentz
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -23,47 +23,34 @@ from PyQt4 import QtGui
 from wididit import Entry
 
 from wididitclient.i18n import _
-from wididitclient.utils import get_qicon
 from wididitclient.login import get_people
+from wididitclient.utils import get_qicon, log
 from wididitclient.entrylistwidget import EntryListWidget
 
 class MainWindow(QtGui.QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
 
+        log.debug('Spawning main window.')
+
         # Title of main window.
         self.setWindowTitle(_('Wididit'))
         self.setWindowIcon(get_qicon())
 
-        self.setCentralWidget(TabWidget(self))
-
+        self.setCentralWidget(QtGui.QTabWidget(self))
 
         # Title of tab containing the timeline.
         title = _('Timeline')
-
-        self._timeline = QtGui.QScrollArea(self)
-        self._timeline.setWidgetResizable(True)
+        entries = Entry.Query(get_people().server).shared(True).fetch()
+        self._timeline = EntryListWidget(self, entries)
         self.centralWidget().addTab(self._timeline, title)
 
-        entries = Entry.Query(get_people().server).shared(True).fetch()
-        widget = QtGui.QWidget()
-        self._timeline.setWidget(widget)
-        widget.setLayout(EntryListWidget(entries, widget))
-
-
-        # Title of tab containing all entries
+        # Title of tab containing the timeline.
         title = _('All')
-
-        self._all = QtGui.QScrollArea(self)
-        self._all.setWidgetResizable(True)
-        self.centralWidget().addTab(self._all, title)
-
         entries = Entry.Query(get_people().server, Entry.Query.MODE_ALL).fetch()
-        widget = QtGui.QWidget()
-        self._all.setWidget(widget)
-        widget.setLayout(EntryListWidget(entries, widget))
+        self._all = EntryListWidget(self, entries)
+        self.centralWidget().addTab(self._all, title)
 
         self.show()
 
-class TabWidget(QtGui.QTabWidget):
-    pass
+        log.debug('Main window displayed.')

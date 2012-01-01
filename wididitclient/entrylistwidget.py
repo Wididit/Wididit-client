@@ -1,4 +1,4 @@
-# Copyright (C) 2011, Valentin Lorentz
+# Copyright (C) 2011-2012, Valentin Lorentz
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -18,13 +18,24 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+__all__ = ['EntryListWidget']
+
 from PyQt4 import QtGui
 
 from wididit import Entry
 
-class EntryListWidget(QtGui.QVBoxLayout):
-    def __init__(self, entries, parent=None):
+class EntryListWidget(QtGui.QScrollArea):
+    def __init__(self, parent, entries):
         super(EntryListWidget, self).__init__(parent)
+        self.setWidgetResizable(True)
+
+        self._widget = QtGui.QWidget()
+        self.setWidget(self._widget)
+        self._widget.setLayout(EntryListLayout(entries, self._widget))
+
+class EntryListLayout(QtGui.QVBoxLayout):
+    def __init__(self, entries, parent=None):
+        super(EntryListLayout, self).__init__(parent)
 
         for entry in entries:
             item = QtGui.QFrame()

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Copyright (C) 2011, Valentin Lorentz
+# Copyright (C) 2011-2012, Valentin Lorentz
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -23,6 +23,8 @@
 __version__ = '0.1'
 
 import sys
+import logging
+import optparse
 
 # Make sure libraries are installed.
 import wididit
@@ -33,6 +35,14 @@ from wididitclient.application import Application
 
 def run():
     global mainwindow
+
+    parser = optparse.OptionParser()
+    parser.add_option('-l', '--log', dest='loglevel',
+            help='Define log level.', metavar='LOGLEVEL',
+            default='WARNING')
+    (options, args) = parser.parse_args()
+    logging.basicConfig(level=getattr(logging, options.loglevel.upper()))
+
     application = Application(sys.argv)
     sys.exit(application.run())
 

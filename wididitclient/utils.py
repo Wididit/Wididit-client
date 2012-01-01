@@ -1,4 +1,4 @@
-# Copyright (C) 2011, Valentin Lorentz
+# Copyright (C) 2011-2012, Valentin Lorentz
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -18,8 +18,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+__all__ = ['data_file_path', 'get_qicon', 'log']
+
 import os
 import sys
+import logging
 
 from PyQt4 import QtGui
 
@@ -40,3 +43,5 @@ def get_qicon(filename='ui/whale.svg'):
     """Return a QIcon instance.
     """
     return QtGui.QIcon(data_file_path(filename))
+
+log = logging.getLogger('wididit-client')
