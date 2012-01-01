@@ -42,8 +42,19 @@ def recursive_listdir(base_path):
 if os.path.isfile('po/POTFILES.in'):
     os.unlink('po/POTFILES.in')
 files = [x for x in recursive_listdir('wididitclient') if x.endswith('.py')]
+
+# Populate POTFILES.in (used by DistUtilsExtra)
 with open('po/POTFILES.in', 'a') as fd:
     fd.write('\n'.join(files))
+
+# Fix gettext issue with plural forms
+for filename in os.listdir('po'):
+    path = os.path.join('po', filename)
+    if path.endswith('.po'):
+        lines = [x for x in open(path, 'r').readlines()
+            if not x.startswith('"Plural-Forms: ')]
+        print repr(lines)
+        open(path, 'w').writelines(lines)
 
 setup(name='wididitclient',
       version=wididitclient.__version__,
