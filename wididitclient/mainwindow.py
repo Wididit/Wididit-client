@@ -41,6 +41,7 @@ class MainWindow(QtGui.QMainWindow):
 
         self.setCentralWidget(QtGui.QTabWidget(self))
         self.centralWidget().setTabsClosable(True)
+        self.centralWidget().setMovable(True)
 
         self._init_geometry()
         self._init_tabs()
@@ -51,37 +52,99 @@ class MainWindow(QtGui.QMainWindow):
         log.debug('Main window displayed.')
 
     def _init_tabs(self):
-        # Title of tab containing the timeline.
-        title = _('Timeline')
-        entries = Entry.Query(get_people().server).shared(True).fetch()
-        self._timeline = EntryListWidget(self, entries)
-        self.centralWidget().addTab(self._timeline, title)
+        self._tabs = {}
 
-        # Title of tab containing all entries.
-        title = _('All')
-        entries = Entry.Query(get_people().server, Entry.Query.MODE_ALL).fetch()
-        self._all = EntryListWidget(self, entries)
-        self.centralWidget().addTab(self._all, title)
+        tabs = conf.get(['look', 'mainwindow', 'tabs', 'opened'],
+                ['timeline', 'all', 'own'])
 
-        # Title of tab containing user's entries.
-        title = _('Your entries')
-        entries = Entry.Query(get_people().server, Entry.Query.MODE_ALL) \
-                .filterAuthor(get_people()).fetch()
-        self._ownentries = EntryListWidget(self, entries)
-        self.centralWidget().addTab(self._ownentries, title)
+        for tab in tabs:
+            self.opentab(tab)
 
     def _init_toolbar(self):
         self._menus = {
                 # File menu title.
                 'file': self.menuBar().addMenu(_('&File')),
+                # Tabs menu title.
+                'tabs': self.menuBar().addMenu(_('&Tabs')),
                 }
+        self._menus.update({
+                # Tabs>Open/Close menu title.
+                'openclosetab': self._menus['tabs'].addMenu(_('Open/Close')),
+                })
         self._actions = {
                 # Quit Wididit from the 'File' menu.
                 'quit': QtGui.QAction(_('Quit'), self),
+                'openclosetab': {
+                    # Open timeline tab.
+                    'timeline': QtGui.QAction(_('Timeline'), self),
+                    # Open 'All entries' tab.
+                    'all': QtGui.QAction(_('All'), self),
+                    # Open timeline tab.
+                    'own': QtGui.QAction(_('Your entries'), self),
+                    }
                 }
         self._actions['quit'].triggered.connect(self.quit)
         self._menus['file'].addSeparator()
         self._menus['file'].addAction(self._actions['quit'])
+
+        for name in ('timeline', 'all', 'own'):
+            self._actions['openclosetab'][name].setCheckable(True)
+            if name in self._tabs:
+                self._actions['openclosetab'][name].setChecked(True)
+            self._actions['openclosetab'][name].toggled \
+                    .connect(self.openclosetab_slot(name))
+            self._menus['openclosetab'].addAction(
+                    self._actions['openclosetab'][name])
+        self.centralWidget().tabCloseRequested.connect(self.closetab_slot)
+
+    def openclosetab_slot(self, id_):
+        def new_openclosetab_slot(checked):
+            log.debug('Called new_openclosetab_slot for %s with %r.' %
+                    (id_, checked))
+            if checked:
+                self.opentab(id_)
+            else:
+                self.closetab(id_)
+        return new_openclosetab_slot
+
+    def closetab_slot(self, index):
+        widget = self.centralWidget().widget(index)
+        for key, value in self._tabs.items():
+            if value[0] == widget:
+                self.closetab(key)
+                self._actions['openclosetab'][key].setChecked(False)
+                break
+
+    def opentab(self, id_):
+        if id_ == 'timeline':
+            # Title of tab containing the timeline.
+            title = _('Timeline')
+            entries = Entry.Query(get_people().server).shared(True).fetch()
+            value = (EntryListWidget(self, entries), title)
+        elif id_ == 'all':
+            # Title of tab containing all entries.
+            title = _('All')
+            entries = Entry.Query(get_people().server,
+                    Entry.Query.MODE_ALL).fetch()
+            value = (EntryListWidget(self, entries), title)
+        elif id_ == 'own':
+            # Title of tab containing user's entries.
+            title = _('Your entries')
+            entries = Entry.Query(get_people().server,
+                    Entry.Query.MODE_ALL).filterAuthor(get_people()) \
+                    .fetch()
+            value = (EntryListWidget(self, entries), title)
+            self.centralWidget().addTab(*value)
+        self._tabs[id_] = value
+        self.centralWidget().addTab(*value)
+
+    def closetab(self, id_):
+        log.debug('Closing tab %s.' % id_)
+        if id_ not in self._tabs: # Already removed:
+            return
+        index = self.centralWidget().indexOf(self._tabs[id_][0])
+        self.centralWidget().removeTab(index)
+        del self._tabs[id_]
 
     def closeEvent(self, event):
         self._save_geometry()
