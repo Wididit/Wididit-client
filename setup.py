@@ -51,9 +51,10 @@ with open('po/POTFILES.in', 'a') as fd:
 for filename in os.listdir('po'):
     path = os.path.join('po', filename)
     if path.endswith('.po'):
-        lines = [x for x in open(path, 'r').readlines()
-            if not x.startswith('"Plural-Forms: ')]
-        open(path, 'w').writelines(lines)
+        lines = open(path, 'r').readlines()
+        if any([x.startswith('"Plural-Forms: ') for x in lines]):
+            lines = [x for x in lines if not x.startswith('"Plural-Forms: ')]
+            open(path, 'w').writelines(lines)
 
 setup(name='wididitclient',
       version=wididitclient.__version__,
