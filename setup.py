@@ -53,7 +53,6 @@ for filename in os.listdir('po'):
     if path.endswith('.po'):
         lines = [x for x in open(path, 'r').readlines()
             if not x.startswith('"Plural-Forms: ')]
-        print repr(lines)
         open(path, 'w').writelines(lines)
 
 setup(name='wididitclient',
