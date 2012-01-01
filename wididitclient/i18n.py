@@ -24,17 +24,24 @@ import os
 import sys
 import gettext
 
+from wididitclient.utils import log
+
 if 'unittest' in sys.modules:
     _ = lambda x:x
 else:
     try:
+        log.debug('Trying default gettext path.')
         _ = gettext.translation('wididitclient')
+        log.debug('Using default gettext path.')
     except:
-        try:
+        #try:
             path = os.path.join(sys.prefix, 'local', 'share', 'locale')
+            log.debug('Trying forced local path for gettext: %s' % path)
             _trans = gettext.translation('wididitclient', localedir=path)
             _ = _trans.gettext
-        except:
-            def _(string, *args, **kwargs):
-                return string
+            log.debug('Using forced local path for gettext.')
+        #except:
+        #    def _(string, *args, **kwargs):
+        #        return string
+        #    log.debug('Using gettext fallback.')
 

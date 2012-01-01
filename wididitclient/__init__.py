@@ -30,8 +30,6 @@ import optparse
 import wididit
 import PyQt4
 
-from wididitclient.application import Application
-
 
 def run():
     global mainwindow
@@ -43,6 +41,7 @@ def run():
     (options, args) = parser.parse_args()
     logging.basicConfig(level=getattr(logging, options.loglevel.upper()))
 
+    from wididitclient.application import Application
     application = Application(sys.argv)
     sys.exit(application.run())
 
