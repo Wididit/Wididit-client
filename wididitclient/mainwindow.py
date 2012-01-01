@@ -22,14 +22,16 @@ from PyQt4 import QtGui
 
 from wididit import Entry
 
+from wididitclient import conf
 from wididitclient.i18n import _
 from wididitclient.login import get_people
 from wididitclient.utils import get_qicon, log
 from wididitclient.entrylistwidget import EntryListWidget
 
 class MainWindow(QtGui.QMainWindow):
-    def __init__(self):
+    def __init__(self, application):
         super(MainWindow, self).__init__()
+        self._application = application
 
         log.debug('Spawning main window.')
 
@@ -38,7 +40,17 @@ class MainWindow(QtGui.QMainWindow):
         self.setWindowIcon(get_qicon())
 
         self.setCentralWidget(QtGui.QTabWidget(self))
+        self.centralWidget().setTabsClosable(True)
 
+        self._init_geometry()
+        self._init_tabs()
+        self._init_toolbar()
+
+        self.show()
+
+        log.debug('Main window displayed.')
+
+    def _init_tabs(self):
         # Title of tab containing the timeline.
         title = _('Timeline')
         entries = Entry.Query(get_people().server).shared(True).fetch()
@@ -58,6 +70,38 @@ class MainWindow(QtGui.QMainWindow):
         self._ownentries = EntryListWidget(self, entries)
         self.centralWidget().addTab(self._ownentries, title)
 
-        self.show()
+    def _init_toolbar(self):
+        self._menus = {
+                # File menu title.
+                'file': self.menuBar().addMenu(_('&File')),
+                }
+        self._actions = {
+                # Quit Wididit from the 'File' menu.
+                'quit': QtGui.QAction(_('Quit'), self),
+                }
+        self._actions['quit'].triggered.connect(self.quit)
+        self._menus['file'].addSeparator()
+        self._menus['file'].addAction(self._actions['quit'])
 
-        log.debug('Main window displayed.')
+    def closeEvent(self, event):
+        self._save_geometry()
+
+    def quit(self, *args, **kwargs):
+        self._save_geometry()
+        return self._application.quit()
+        conf.set(['look', 'mainwindow', 'geometry', 'height'], self.height)
+
+
+    def _init_geometry(self):
+        width = conf.get(['look', 'mainwindow', 'geometry', 'width'], 800)
+        height = conf.get(['look', 'mainwindow', 'geometry', 'height'], 600)
+        posx = conf.get(['look', 'mainwindow', 'geometry', 'posx'], 0)
+        posy = conf.get(['look', 'mainwindow', 'geometry', 'posy'], 0)
+        self.resize(width, height)
+        self.move(posx, posy)
+
+    def _save_geometry(self):
+        conf.set(['look', 'mainwindow', 'geometry', 'width'], self.width())
+        conf.set(['look', 'mainwindow', 'geometry', 'height'], self.height())
+        conf.set(['look', 'mainwindow', 'geometry', 'posx'], self.x())
+        conf.set(['look', 'mainwindow', 'geometry', 'posy'], self.y())

@@ -68,6 +68,15 @@ class LoginWindow(QtGui.QMainWindow):
         self.setWindowIcon(get_qicon())
 
         self.setCentralWidget(QtGui.QWidget())
+
+        self._init_geometry()
+        self._init_widgets()
+
+        self.show()
+
+        log.debug('Login window displayed.')
+
+    def _init_widgets(self):
         layout = QtGui.QVBoxLayout()
         self.centralWidget().setLayout(layout)
 
@@ -97,10 +106,6 @@ class LoginWindow(QtGui.QMainWindow):
         layout.addWidget(self._validate)
         self._validate.clicked.connect(self.on_connect)
 
-        self.show()
-
-        log.debug('Login window displayed.')
-
     def on_connect(self, event=None):
         log.debug('User clicked the authentication button. Validating '
                 'creditentials...')
@@ -111,6 +116,7 @@ class LoginWindow(QtGui.QMainWindow):
         conf.set(['accounts', 'default', 'pass'], str(password))
         if valid:
             log.info('Valid userid and password. Connected.')
+            self._save_geometry()
             self.hide()
         else:
             log.info('Invalid userid or password. Asking authentication again.')
@@ -126,3 +132,14 @@ class LoginWindow(QtGui.QMainWindow):
             dialog.layout().addWidget(close)
             dialog.show()
 
+    def closeEvent(self, event):
+        self._save_geometry()
+
+    def _init_geometry(self):
+        posx = conf.get(['look', 'loginwindow', 'geometry', 'posx'], 0)
+        posy = conf.get(['look', 'loginwindow', 'geometry', 'posy'], 0)
+        self.move(posx, posy)
+
+    def _save_geometry(self):
+        conf.set(['look', 'loginwindow', 'geometry', 'posx'], self.x())
+        conf.set(['look', 'loginwindow', 'geometry', 'posy'], self.y())

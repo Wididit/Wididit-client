@@ -32,5 +32,5 @@ class Application(QtGui.QApplication):
         return self.exec_()
 
     def on_authenticated(self, userid, password):
-        self._mainwindow = MainWindow()
+        self._mainwindow = MainWindow(self)
         return True

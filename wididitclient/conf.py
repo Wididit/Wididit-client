@@ -33,8 +33,9 @@ def get_fd(mode='w+'):
 
 def save():
     global _conf
+    conf = json.dumps(_conf, sort_keys=True, indent=4)
     with get_fd() as file:
-        json.dump(_conf, file, sort_keys=True, indent=4)
+        file.write(conf)
 
 _path = os.path.expanduser('~/.config/wididit-client.json')
 if not os.path.isfile(_path):
