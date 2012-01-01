@@ -23,6 +23,7 @@ from PyQt4 import QtGui
 from wididit import People
 from wididit.utils import userid2tuple
 
+from wididitclient import conf
 from wididitclient.i18n import _
 from wididitclient.utils import get_qicon, log
 
@@ -70,13 +71,14 @@ class LoginWindow(QtGui.QMainWindow):
         layout = QtGui.QVBoxLayout()
         self.centralWidget().setLayout(layout)
 
-        self._login = QtGui.QLineEdit()
+        self._userid = QtGui.QLineEdit()
         # Value of the login prompt when it is empty and not focused.
-        self._login.setPlaceholderText(_('login@hostname'))
+        self._userid.setPlaceholderText(_('login@hostname'))
         # Help text for the login prompt.
-        self._login.setToolTip(_('Enter your unique userid.'))
-        self._login.returnPressed.connect(self.on_connect)
-        layout.addWidget(self._login)
+        self._userid.setToolTip(_('Enter your unique userid.'))
+        self._userid.returnPressed.connect(self.on_connect)
+        self._userid.setText(conf.get(['accounts', 'default', 'userid']))
+        layout.addWidget(self._userid)
 
         self._password = QtGui.QLineEdit()
         # Value of the password prompt when it is empty and not focused
@@ -85,6 +87,7 @@ class LoginWindow(QtGui.QMainWindow):
         self._password.setToolTip(_('The password for your Wididit account.'))
         self._password.setEchoMode(QtGui.QLineEdit.Password)
         self._password.returnPressed.connect(self.on_connect)
+        self._password.setText(conf.get(['accounts', 'default', 'pass']))
         layout.addWidget(self._password)
 
         self._validate = QtGui.QPushButton(
@@ -101,7 +104,11 @@ class LoginWindow(QtGui.QMainWindow):
     def on_connect(self, event=None):
         log.debug('User clicked the authentication button. Validating '
                 'creditentials...')
-        valid = self._callback(self._login.text(), self._password.text())
+        userid = self._userid.text()
+        password = self._password.text()
+        valid = self._callback(userid, password)
+        conf.set(['accounts', 'default', 'userid'], str(userid))
+        conf.set(['accounts', 'default', 'pass'], str(password))
         if valid:
             log.info('Valid userid and password. Connected.')
             self.hide()
