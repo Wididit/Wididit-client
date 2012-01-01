@@ -31,17 +31,18 @@ if 'unittest' in sys.modules:
 else:
     try:
         log.debug('Trying default gettext path.')
-        _ = gettext.translation('wididitclient')
+        _trans = gettext.translation('wididitclient')
+        _ = _trans.ugettext
         log.debug('Using default gettext path.')
     except:
-        #try:
+        try:
             path = os.path.join(sys.prefix, 'local', 'share', 'locale')
             log.debug('Trying forced local path for gettext: %s' % path)
             _trans = gettext.translation('wididitclient', localedir=path)
-            _ = _trans.gettext
+            _ = _trans.ugettext
             log.debug('Using forced local path for gettext.')
-        #except:
-        #    def _(string, *args, **kwargs):
-        #        return string
-        #    log.debug('Using gettext fallback.')
+        except:
+            def _(string, *args, **kwargs):
+                return string
+            log.debug('Using gettext fallback.')
 
