@@ -2,14 +2,14 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-# Valentin 'ProgVal' Lorentz <progval@gmail.com>, 2011.
+# Valentin 'ProgVal' Lorentz <progval@gmail.com>, 2011, 2012.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: Wididit\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-12-31 11:36+0100\n"
-"PO-Revision-Date: 2011-12-31 11:40+0100\n"
+"POT-Creation-Date: 2012-01-01 12:19+0100\n"
+"PO-Revision-Date: 2012-01-01 12:42+0100\n"
 "Last-Translator: Valentin 'ProgVal' Lorentz <progval@gmail.com>\n"
 "Language-Team: Français <progval@gmail.com>\n"
 "Language: \n"
@@ -19,9 +19,63 @@ msgstr ""
 "X-Poedit-Language: French\n"
 "X-Poedit-Country: France\n"
 "X-Poedit-SourceCharset: utf-8\n"
-"Plural-Forms: s\n"
 
-#. Main window title
-#: ../wididitclient/mainwindow.py:30
+#. Title of login window.
+#: ../wididitclient/login.py:66
+msgid "Connect to Wididit"
+msgstr "Connection à Wididit"
+
+#. Value of the login prompt when it is empty and not focused.
+#: ../wididitclient/login.py:75
+msgid "login@hostname"
+msgstr "login@nomdhote"
+
+#. Help text for the login prompt.
+#: ../wididitclient/login.py:77
+msgid "Enter your unique userid."
+msgstr "Entrez votre identifiant d'utilisateur."
+
+#. Value of the password prompt when it is empty and not focused
+#: ../wididitclient/login.py:83
+msgid "password"
+msgstr "mot de passe"
+
+#. Help text for the password prompt.
+#: ../wididitclient/login.py:85
+msgid "The password for your Wididit account."
+msgstr "Le mot de passe de votre compte Wididit."
+
+#. Text of the button used to connect.
+#: ../wididitclient/login.py:92
+msgid "Connect"
+msgstr "Connexion"
+
+#. Message displayed when authentication failed.
+#: ../wididitclient/login.py:113
+msgid "Invalid userid or password. Try again."
+msgstr "Identifiant d'utilisateur ou mot de passe invalide. Réessayez."
+
+#. Close the "authentication failed" dialog.
+#: ../wididitclient/login.py:115
+msgid "Close"
+msgstr "Fermer"
+
+#. Title of main window.
+#: ../wididitclient/mainwindow.py:37
 msgid "Wididit"
 msgstr "Wididit"
+
+#. Title of tab containing the timeline.
+#: ../wididitclient/mainwindow.py:43
+msgid "Timeline"
+msgstr "Timeline"
+
+#. Title of tab containing all entries.
+#: ../wididitclient/mainwindow.py:49
+msgid "All"
+msgstr "Tous"
+
+#. Title of tab containing user's entries.
+#: ../wididitclient/mainwindow.py:55
+msgid "Your entries"
+msgstr "Vos entrées"
