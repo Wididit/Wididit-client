@@ -53,7 +53,6 @@ class MainWindow(QtGui.QMainWindow):
 
         # Title of tab containing user's entries.
         title = _('Your entries')
-        print repr(title)
         entries = Entry.Query(get_people().server, Entry.Query.MODE_ALL) \
                 .filterAuthor(get_people()).fetch()
         self._ownentries = EntryListWidget(self, entries)
