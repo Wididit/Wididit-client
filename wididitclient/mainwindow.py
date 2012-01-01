@@ -45,11 +45,18 @@ class MainWindow(QtGui.QMainWindow):
         self._timeline = EntryListWidget(self, entries)
         self.centralWidget().addTab(self._timeline, title)
 
-        # Title of tab containing the timeline.
+        # Title of tab containing all entries.
         title = _('All')
         entries = Entry.Query(get_people().server, Entry.Query.MODE_ALL).fetch()
         self._all = EntryListWidget(self, entries)
         self.centralWidget().addTab(self._all, title)
+
+        # Title of tab containing user's entries.
+        title = _('Your entries')
+        entries = Entry.Query(get_people().server, Entry.Query.MODE_ALL) \
+                .filterAuthor(get_people()).fetch()
+        self._ownentries = EntryListWidget(self, entries)
+        self.centralWidget().addTab(self._ownentries, title)
 
         self.show()
 
