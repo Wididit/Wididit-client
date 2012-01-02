@@ -8,74 +8,140 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Wididit\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-01-01 12:19+0100\n"
+"POT-Creation-Date: 2012-01-02 18:54+0100\n"
 "PO-Revision-Date: 2012-01-01 12:42+0100\n"
 "Last-Translator: Valentin 'ProgVal' Lorentz <progval@gmail.com>\n"
 "Language-Team: Français <progval@gmail.com>\n"
 "Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: UTF-8\n"
 "X-Poedit-Language: French\n"
 "X-Poedit-Country: France\n"
 "X-Poedit-SourceCharset: utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Language: fr_FR\n"
+"X-Source-Language: C\n"
 
 #. Title of login window.
-#: ../wididitclient/login.py:66
+#: ../wididitclient/login.py:74
 msgid "Connect to Wididit"
 msgstr "Connection à Wididit"
 
 #. Value of the login prompt when it is empty and not focused.
-#: ../wididitclient/login.py:75
+#: ../wididitclient/login.py:92
 msgid "login@hostname"
 msgstr "login@nomdhote"
 
 #. Help text for the login prompt.
-#: ../wididitclient/login.py:77
+#: ../wididitclient/login.py:94
 msgid "Enter your unique userid."
 msgstr "Entrez votre identifiant d'utilisateur."
 
 #. Value of the password prompt when it is empty and not focused
-#: ../wididitclient/login.py:83
+#: ../wididitclient/login.py:101
 msgid "password"
 msgstr "mot de passe"
 
 #. Help text for the password prompt.
-#: ../wididitclient/login.py:85
+#: ../wididitclient/login.py:103
 msgid "The password for your Wididit account."
 msgstr "Le mot de passe de votre compte Wididit."
 
 #. Text of the button used to connect.
-#: ../wididitclient/login.py:92
+#: ../wididitclient/login.py:111
 msgid "Connect"
 msgstr "Connexion"
 
-#. Message displayed when authentication failed.
-#: ../wididitclient/login.py:113
+#. 'Login failed' dialog title.
+#: ../wididitclient/login.py:133
+msgid "Connot connect."
+msgstr "Connexion impossible."
+
+#. 'Login failed' dialog content.
+#: ../wididitclient/login.py:135
 msgid "Invalid userid or password. Try again."
 msgstr "Identifiant d'utilisateur ou mot de passe invalide. Réessayez."
 
-#. Close the "authentication failed" dialog.
-#: ../wididitclient/login.py:115
-msgid "Close"
-msgstr "Fermer"
-
 #. Title of main window.
-#: ../wididitclient/mainwindow.py:37
+#: ../wididitclient/mainwindow.py:41
 msgid "Wididit"
 msgstr "Wididit"
 
+#. File menu title.
+#: ../wididitclient/mainwindow.py:68
+msgid "&File"
+msgstr "&Fichier"
+
+#. Tabs menu title.
+#: ../wididitclient/mainwindow.py:70
+msgid "&Tabs"
+msgstr "&Onglets"
+
+#. Tab>Open search tab
+#: ../wididitclient/mainwindow.py:74
+msgid "Search"
+msgstr "Recherche"
+
+#. Tabs>Open/Close menu title.
+#: ../wididitclient/mainwindow.py:76
+msgid "Open/Close"
+msgstr "Ouvrir/Fermer"
+
+#. Quit Wididit from the 'File' menu.
+#: ../wididitclient/mainwindow.py:80
+msgid "Quit"
+msgstr "Quitter"
+
+#. Open 'Show user' tab
+#. 'Show user' dialog title.
+#: ../wididitclient/mainwindow.py:83 ../wididitclient/mainwindow.py:128
+msgid "Show user"
+msgstr "Afficher un utilisateur"
+
+#. Open timeline tab.
 #. Title of tab containing the timeline.
-#: ../wididitclient/mainwindow.py:43
+#: ../wididitclient/mainwindow.py:87 ../wididitclient/mainwindow.py:192
 msgid "Timeline"
 msgstr "Timeline"
 
+#. Open 'All entries' tab.
 #. Title of tab containing all entries.
-#: ../wididitclient/mainwindow.py:49
+#: ../wididitclient/mainwindow.py:89 ../wididitclient/mainwindow.py:197
 msgid "All"
 msgstr "Tous"
 
+#. Open timeline tab.
 #. Title of tab containing user's entries.
-#: ../wididitclient/mainwindow.py:55
+#: ../wididitclient/mainwindow.py:91 ../wididitclient/mainwindow.py:203
 msgid "Your entries"
 msgstr "Vos entrées"
+
+#. 'Show user' dialog content.
+#: ../wididitclient/mainwindow.py:130
+msgid "What is the userid of the user you want to see?"
+msgstr "Quel est l'identifiant de l'utilisateur que vous voulez voir ?"
+
+#. 'Invalid user' dialog title.
+#: ../wididitclient/mainwindow.py:144 ../wididitclient/mainwindow.py:152
+#: ../wididitclient/mainwindow.py:161
+msgid "Cannot show user."
+msgstr "Impossible d'afficher l'utilisateur."
+
+#. 'Invalid user' dialog content.
+#: ../wididitclient/mainwindow.py:146
+msgid "The given userid is not valid. Try again."
+msgstr "L'identifiant de l'utilisateur est invalide. Réessayez."
+
+#. 'Invalid user' dialog content.
+#: ../wididitclient/mainwindow.py:154
+msgid "The given userid does not exist. The server hosting him might be down."
+msgstr ""
+"Cet identifiant d'utilisateur n'existe pas Le serveur l'hébergeant est "
+"probablement indisponible."
+
+#. 'Invalid user' dialog content.
+#: ../wididitclient/mainwindow.py:163
+msgid "This user does not exist on the server. Check your input."
+msgstr ""
+"Cet utilisateur n'existe pas sur l'utilisateur. Vérifiez votre requête."
