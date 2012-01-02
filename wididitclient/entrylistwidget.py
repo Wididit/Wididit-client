@@ -59,7 +59,7 @@ class EntryListItemWidget(QtGui.QFrame):
     def __init__(self, entry, parent=None):
         super(EntryListItemWidget, self).__init__(parent)
 
-        self.setStyleSheet('background-color: white;');
+        self.setFrameStyle(QtGui.QFrame.StyledPanel)
         self.setLayout(EntryListItemLayout(entry))
 
 class EntryListItemLayout(QtGui.QGridLayout):

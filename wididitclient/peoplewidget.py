@@ -63,7 +63,7 @@ class ProfileWidget(QtGui.QFrame):
         size_policy.setHorizontalPolicy(QtGui.QSizePolicy.Expanding)
         self.setSizePolicy(size_policy)
 
-        self.setStyleSheet('background-color: white;');
+        self.setFrameStyle(QtGui.QFrame.StyledPanel)
         self._layout = ProfileLayout(people)
         self.setLayout(self._layout)
 
@@ -76,7 +76,7 @@ class ProfileLayout(QtGui.QGridLayout):
         self._biography = QtGui.QLabel(people.biography)
         self.addWidget(self._biography, 1, 0)
 
-class AuthorWidget(QtGui.QCommandLinkButton):
+class AuthorWidget(QtGui.QPushButton):
     def __init__(self, author):
         super(AuthorWidget, self).__init__()
         self._author = author
