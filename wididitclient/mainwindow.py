@@ -61,10 +61,10 @@ class MainWindow(QtGui.QMainWindow):
         for tab in tabs:
             self.openmaintab(tab)
 
-        users = conf.get(['look','mainwindow','tabs','opened','show','user'],
+        users = conf.get(['look', 'mainwindow', 'tabs', 'opened', 'showuser'],
                 [])
         for userid in users:
-            self.showuser(get_people(userid), raises=False)
+            self.showuser(People.from_anything(userid), raises=False)
 
     def _init_toolbar(self):
         self._menus = {
@@ -231,9 +231,11 @@ class MainWindow(QtGui.QMainWindow):
 
     def closeEvent(self, event):
         self._save_geometry()
+        self._save_tabs()
 
     def quit(self, *args, **kwargs):
         self._save_geometry()
+        self._save_tabs()
         return self._application.quit()
         conf.set(['look', 'mainwindow', 'geometry', 'height'], self.height)
 
@@ -251,3 +253,9 @@ class MainWindow(QtGui.QMainWindow):
         conf.set(['look', 'mainwindow', 'geometry', 'height'], self.height())
         conf.set(['look', 'mainwindow', 'geometry', 'posx'], self.x())
         conf.set(['look', 'mainwindow', 'geometry', 'posy'], self.y())
+
+    def _save_tabs(self):
+        conf.set(['look', 'mainwindow', 'tabs', 'opened', 'main'],
+                self._tabs['main'].keys())
+        conf.set(['look', 'mainwindow', 'tabs', 'opened', 'showuser'],
+                self._tabs['showuser'].keys())
