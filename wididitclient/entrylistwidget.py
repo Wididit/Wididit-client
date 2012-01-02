@@ -68,9 +68,16 @@ class EntryListItemLayout(QtGui.QGridLayout):
 
         from wididitclient.peoplewidget import AuthorWidget
 
+        title_font = QtGui.QFont()
+        title_font.setBold(True)
+        title_font.setCapitalization(QtGui.QFont.SmallCaps)
+        title_font.setUnderline(True)
         self._title = QtGui.QLabel(entry.title)
+        self._title.setFont(title_font)
         self.addWidget(self._title, 0, 0)
+
         self._author = AuthorWidget(entry.author)
         self.addWidget(self._author, 0, 1)
-        self._content = QtGui.QLabel(entry.content)
-        self.addWidget(self._content, 1, 0, 1, 2)
+
+        self._summary = QtGui.QLabel(entry.summary)
+        self.addWidget(self._summary, 1, 0, 1, 2)

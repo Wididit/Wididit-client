@@ -85,6 +85,7 @@ class AuthorWidget(QtGui.QPushButton):
 
         self.setText(author.username)
         self.setToolTip(author.userid)
+        self.setFlat(True)
 
         self.clicked.connect(self.on_click)
 
