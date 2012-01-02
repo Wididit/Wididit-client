@@ -60,7 +60,11 @@ class EntryListWidgetItem(QtGui.QGridLayout):
     def __init__(self, entry):
         super(EntryListWidgetItem, self).__init__()
 
+        from wididitclient.peoplewidget import AuthorWidget
+
         self._title = QtGui.QLabel(entry.title)
         self.addWidget(self._title, 0, 0)
+        self._author = AuthorWidget(entry.author)
+        self.addWidget(self._author, 0, 1)
         self._content = QtGui.QLabel(entry.content)
-        self.addWidget(self._content, 1, 0)
+        self.addWidget(self._content, 1, 0, 1, 2)

@@ -32,7 +32,7 @@ import PyQt4
 
 
 def run():
-    global mainwindow
+    global app
 
     parser = optparse.OptionParser()
     parser.add_option('-l', '--log', dest='loglevel',
@@ -42,8 +42,8 @@ def run():
     logging.basicConfig(level=getattr(logging, options.loglevel.upper()))
 
     from wididitclient.application import Application
-    application = Application(sys.argv)
-    sys.exit(application.run())
+    app = Application(sys.argv)
+    sys.exit(app.run())
 
 if __name__ == '__name__':
     run()

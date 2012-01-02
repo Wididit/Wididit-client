@@ -18,7 +18,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-__all__ = ['PeopleWidget', 'ProfileWidget']
+__all__ = ['PeopleWidget', 'ProfileWidget', 'AuthorWidget']
 
 from PyQt4 import QtGui
 
@@ -75,3 +75,20 @@ class ProfileLayout(QtGui.QGridLayout):
         self.addWidget(self._userid, 0, 0)
         self._biography = QtGui.QLabel(people.biography)
         self.addWidget(self._biography, 1, 0)
+
+class AuthorWidget(QtGui.QCommandLinkButton):
+    def __init__(self, author):
+        super(AuthorWidget, self).__init__()
+        self._author = author
+
+        self.setSizePolicy(QtGui.QSizePolicy(QtGui.QSizePolicy.Ignored))
+
+        self.setText(author.username)
+        self.setToolTip(author.userid)
+
+        self.clicked.connect(self.on_click)
+
+    def on_click(self, event=None):
+        import wididitclient
+
+        wididitclient.app.mainwindow.showuser(self._author)
