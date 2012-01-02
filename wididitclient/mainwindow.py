@@ -49,10 +49,6 @@ class MainWindow(QtGui.QMainWindow):
         self._init_tabs()
         self._init_toolbar()
 
-        self.show()
-
-        log.debug('Main window displayed.')
-
     def _init_tabs(self):
         self._tabs = {'main': {}, 'showuser': {}}
 

@@ -20,17 +20,28 @@
 
 import sys
 
+from PyQt4 import QtCore
 from PyQt4 import QtGui
 
+from wididitclient import utils
 from wididitclient import login
+from wididitclient.i18n import _
 from wididitclient.login import authenticate
 from wididitclient.mainwindow import MainWindow
 
 class Application(QtGui.QApplication):
     def run(self):
+
         authenticate(self.on_authenticated)
         return self.exec_()
 
     def on_authenticated(self, userid, password):
+        self.splash = QtGui.QSplashScreen(
+                QtGui.QPixmap(utils.data_file_path('ui/whale.svg')),
+                QtCore.Qt.WindowStaysOnTopHint);
+        self.splash.show();
+
         self.mainwindow = MainWindow(self)
+        self.splash.finish(self.mainwindow)
+        self.mainwindow.show()
         return True
