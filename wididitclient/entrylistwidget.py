@@ -22,6 +22,7 @@ __all__ = ['EntryListWidget', 'ScrollableEntryListWidget',
         'EntryListItemWidget']
 
 from PyQt4 import QtGui
+from PyQt4 import QtCore
 
 from wididit import Entry
 
@@ -35,19 +36,24 @@ class ScrollableEntryListWidget(QtGui.QScrollArea):
     def __init__(self, parent, entries):
         super(ScrollableEntryListWidget, self).__init__(parent)
         self.setWidgetResizable(True)
+        self.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
 
         self._widget = EntryListWidget(parent, entries)
         self.setWidget(self._widget)
 
+    def resizeEvent(self, event):
+        self._widget.resize(self.size().width(),
+                self._widget.size().height())
+
 class EntryListLayout(QtGui.QVBoxLayout):
-    def __init__(self, entries, parent=None):
+    def __init__(self, entries, parent):
         super(EntryListLayout, self).__init__(parent)
 
         size_policy = QtGui.QSizePolicy(QtGui.QSizePolicy.Ignored)
         size_policy.setHorizontalPolicy(QtGui.QSizePolicy.Expanding)
 
         for entry in entries:
-            widget = EntryListItemWidget(entry)
+            widget = EntryListItemWidget(entry, parent)
             widget.setSizePolicy(size_policy)
             self.addWidget(widget)
 
@@ -56,7 +62,7 @@ class EntryListLayout(QtGui.QVBoxLayout):
         self.addWidget(widget)
 
 class EntryListItemWidget(QtGui.QFrame):
-    def __init__(self, entry, parent=None):
+    def __init__(self, entry, parent):
         super(EntryListItemWidget, self).__init__(parent)
 
         self.setFrameStyle(QtGui.QFrame.StyledPanel)
@@ -80,4 +86,6 @@ class EntryListItemLayout(QtGui.QGridLayout):
         self.addWidget(self._author, 0, 1)
 
         self._summary = QtGui.QLabel(entry.summary)
+        self._summary.setWordWrap(True)
+        self._summary.setAlignment(QtCore.Qt.AlignJustify)
         self.addWidget(self._summary, 1, 0, 1, 2)
