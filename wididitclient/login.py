@@ -20,7 +20,7 @@
 
 from PyQt4 import QtGui
 
-from wididit import People
+from wididit import People, Server
 from wididit.utils import userid2tuple
 
 from wididitclient import conf
@@ -38,6 +38,13 @@ def get_people():
         return None
     else:
         return People(username, hostname, password, connect=True)
+
+def get_server():
+    people = get_people()
+    if people:
+        return people.server
+    else:
+        return Server('wididit.net')
 
 def authenticate(callback):
     global _login_window
