@@ -18,20 +18,25 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-__all__ = ['EntryListWidget']
+__all__ = ['EntryListWidget', 'ScrollableEntryListWidget']
 
 from PyQt4 import QtGui
 
 from wididit import Entry
 
-class EntryListWidget(QtGui.QScrollArea):
+class EntryListWidget(QtGui.QWidget):
     def __init__(self, parent, entries):
         super(EntryListWidget, self).__init__(parent)
+
+        self.setLayout(EntryListLayout(entries, self))
+
+class ScrollableEntryListWidget(QtGui.QScrollArea):
+    def __init__(self, parent, entries):
+        super(ScrollableEntryListWidget, self).__init__(parent)
         self.setWidgetResizable(True)
 
-        self._widget = QtGui.QWidget()
+        self._widget = EntryListWidget(parent, entries)
         self.setWidget(self._widget)
-        self._widget.setLayout(EntryListLayout(entries, self._widget))
 
 class EntryListLayout(QtGui.QVBoxLayout):
     def __init__(self, entries, parent=None):

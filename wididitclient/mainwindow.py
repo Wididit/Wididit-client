@@ -20,13 +20,15 @@
 
 from PyQt4 import QtGui
 
-from wididit import Entry
+from wididit import exceptions
+from wididit import Entry, People
 
 from wididitclient import conf
 from wididitclient.i18n import _
 from wididitclient.login import get_people
 from wididitclient.utils import get_qicon, log
-from wididitclient.entrylistwidget import EntryListWidget
+from wididitclient.peoplewidget import PeopleWidget
+from wididitclient.entrylistwidget import ScrollableEntryListWidget
 
 class MainWindow(QtGui.QMainWindow):
     def __init__(self, application):
@@ -68,12 +70,18 @@ class MainWindow(QtGui.QMainWindow):
                 'tabs': self.menuBar().addMenu(_('&Tabs')),
                 }
         self._menus.update({
+                # Tab>Open search tab
+                'opensearchtab': self._menus['tabs'].addMenu(_('Search')),
                 # Tabs>Open/Close menu title.
                 'openclosetab': self._menus['tabs'].addMenu(_('Open/Close')),
                 })
         self._actions = {
                 # Quit Wididit from the 'File' menu.
                 'quit': QtGui.QAction(_('Quit'), self),
+                'opensearchtab': {
+                    # Open 'Show user' tab
+                    'showuser': QtGui.QAction(_('Show user'), self),
+                    },
                 'openclosetab': {
                     # Open timeline tab.
                     'timeline': QtGui.QAction(_('Timeline'), self),
@@ -95,6 +103,11 @@ class MainWindow(QtGui.QMainWindow):
                     .connect(self.openclosetab_slot(name))
             self._menus['openclosetab'].addAction(
                     self._actions['openclosetab'][name])
+        for name in ('showuser',):
+            self._actions['opensearchtab'][name].triggered \
+                    .connect(self.opensearchtab_slot(name))
+            self._menus['opensearchtab'].addAction(
+                    self._actions['opensearchtab'][name])
         self.centralWidget().tabCloseRequested.connect(self.closetab_slot)
 
     def openclosetab_slot(self, id_):
@@ -107,33 +120,84 @@ class MainWindow(QtGui.QMainWindow):
                 self.closetab(id_)
         return new_openclosetab_slot
 
+    def opensearchtab_slot(self, id_):
+        def new_opensearchtab():
+            if id_ == 'showuser':
+                userid, ok = QtGui.QInputDialog.getText(self,
+                        # 'Show user' dialog title.
+                        _('Show user'),
+                        # 'Show user' dialog content.
+                        _('What is the userid of the user you want to see?')
+                        )
+                if not ok: # User did not press the 'OK' button
+                    return
+                self.showuser(str(userid))
+        return new_opensearchtab
+
+    def showuser(self, people):
+        try:
+            people = People.from_anything(people)
+        except exceptions.PeopleNotInstanciable:
+            dialog = QtGui.QMessageBox.critical(self,
+                    # 'Invalid user' dialog title.
+                    _('Cannot show user.'),
+                    # 'Invalid user' dialog content.
+                    _('The given userid is not valid. Try again.'))
+            return
+        except exceptions.Unreachable:
+            dialog = QtGui.QMessageBox.critical(self,
+                    # 'Invalid user' dialog title.
+                    _('Cannot show user.'),
+                    # 'Invalid user' dialog content.
+                    _('The given userid does not exist. '
+                      'The server hosting him might be down.'))
+            return
+        except exceptions.NotFound:
+            dialog = QtGui.QMessageBox.critical(self,
+                    # 'Invalid user' dialog title.
+                    _('Cannot show user.'),
+                    # 'Invalid user' dialog content.
+                    _('This user does not exist on the server. '
+                      'Check your input.'))
+            return
+        id_ = 'showuser_' + people.userid
+        if id_ not in self._tabs:
+            title = people.userid
+            widget = PeopleWidget(self, people, with_entries=True)
+            value = (widget, title)
+            self._tabs[id_] = value
+            self.centralWidget().addTab(*value)
+        self.centralWidget().setCurrentIndex(
+                self.centralWidget().indexOf(self._tabs[id_][0]))
+
     def closetab_slot(self, index):
         widget = self.centralWidget().widget(index)
         for key, value in self._tabs.items():
             if value[0] == widget:
                 self.closetab(key)
-                self._actions['openclosetab'][key].setChecked(False)
+                if key in self._actions['openclosetab']:
+                    self._actions['openclosetab'][key].setChecked(False)
                 break
 
-    def opentab(self, id_):
+    def opentab(self, id_, **kwargs):
         if id_ == 'timeline':
             # Title of tab containing the timeline.
             title = _('Timeline')
             entries = Entry.Query(get_people().server).shared(True).fetch()
-            value = (EntryListWidget(self, entries), title)
+            value = (ScrollableEntryListWidget(self, entries), title)
         elif id_ == 'all':
             # Title of tab containing all entries.
             title = _('All')
             entries = Entry.Query(get_people().server,
                     Entry.Query.MODE_ALL).fetch()
-            value = (EntryListWidget(self, entries), title)
+            value = (ScrollableEntryListWidget(self, entries), title)
         elif id_ == 'own':
             # Title of tab containing user's entries.
             title = _('Your entries')
             entries = Entry.Query(get_people().server,
                     Entry.Query.MODE_ALL).filterAuthor(get_people()) \
                     .fetch()
-            value = (EntryListWidget(self, entries), title)
+            value = (ScrollableEntryListWidget(self, entries), title)
             self.centralWidget().addTab(*value)
         self._tabs[id_] = value
         self.centralWidget().addTab(*value)
