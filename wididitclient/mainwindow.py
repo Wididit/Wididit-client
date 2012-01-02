@@ -54,13 +54,17 @@ class MainWindow(QtGui.QMainWindow):
         log.debug('Main window displayed.')
 
     def _init_tabs(self):
-        self._tabs = {}
+        self._tabs = {'main': {}, 'showuser': {}}
 
-        tabs = conf.get(['look', 'mainwindow', 'tabs', 'opened'],
+        tabs = conf.get(['look', 'mainwindow', 'tabs', 'opened', 'main'],
                 ['timeline', 'all', 'own'])
-
         for tab in tabs:
-            self.opentab(tab)
+            self.openmaintab(tab)
+
+        users = conf.get(['look','mainwindow','tabs','opened','show','user'],
+                [])
+        for userid in users:
+            self.showuser(get_people(userid), raises=False)
 
     def _init_toolbar(self):
         self._menus = {
@@ -97,10 +101,10 @@ class MainWindow(QtGui.QMainWindow):
 
         for name in ('timeline', 'all', 'own'):
             self._actions['openclosetab'][name].setCheckable(True)
-            if name in self._tabs:
+            if name in self._tabs['main']:
                 self._actions['openclosetab'][name].setChecked(True)
             self._actions['openclosetab'][name].toggled \
-                    .connect(self.openclosetab_slot(name))
+                    .connect(self.openclose_maintab_slot(name))
             self._menus['openclosetab'].addAction(
                     self._actions['openclosetab'][name])
         for name in ('showuser',):
@@ -110,15 +114,15 @@ class MainWindow(QtGui.QMainWindow):
                     self._actions['opensearchtab'][name])
         self.centralWidget().tabCloseRequested.connect(self.closetab_slot)
 
-    def openclosetab_slot(self, id_):
-        def new_openclosetab_slot(checked):
-            log.debug('Called new_openclosetab_slot for %s with %r.' %
+    def openclose_maintab_slot(self, id_):
+        def new_openclose_maintab_slot(checked):
+            log.debug('Called new_openclose_maintab_slot for %s with %r.' %
                     (id_, checked))
             if checked:
-                self.opentab(id_)
+                self.openmaintab(id_)
             else:
-                self.closetab(id_)
-        return new_openclosetab_slot
+                self.closemaintab(id_)
+        return new_openclose_maintab_slot
 
     def opensearchtab_slot(self, id_):
         def new_opensearchtab():
@@ -134,52 +138,59 @@ class MainWindow(QtGui.QMainWindow):
                 self.showuser(str(userid))
         return new_opensearchtab
 
-    def showuser(self, people):
+    def showuser(self, people, raises=True):
         try:
             people = People.from_anything(people)
         except exceptions.PeopleNotInstanciable:
-            dialog = QtGui.QMessageBox.critical(self,
-                    # 'Invalid user' dialog title.
-                    _('Cannot show user.'),
-                    # 'Invalid user' dialog content.
-                    _('The given userid is not valid. Try again.'))
+            if raises:
+                dialog = QtGui.QMessageBox.critical(self,
+                        # 'Invalid user' dialog title.
+                        _('Cannot show user.'),
+                        # 'Invalid user' dialog content.
+                        _('The given userid is not valid. Try again.'))
             return
         except exceptions.Unreachable:
-            dialog = QtGui.QMessageBox.critical(self,
-                    # 'Invalid user' dialog title.
-                    _('Cannot show user.'),
-                    # 'Invalid user' dialog content.
-                    _('The given userid does not exist. '
-                      'The server hosting him might be down.'))
+            if raises:
+                dialog = QtGui.QMessageBox.critical(self,
+                        # 'Invalid user' dialog title.
+                        _('Cannot show user.'),
+                        # 'Invalid user' dialog content.
+                        _('The given userid does not exist. '
+                          'The server hosting him might be down.'))
             return
         except exceptions.NotFound:
-            dialog = QtGui.QMessageBox.critical(self,
-                    # 'Invalid user' dialog title.
-                    _('Cannot show user.'),
-                    # 'Invalid user' dialog content.
-                    _('This user does not exist on the server. '
-                      'Check your input.'))
+            if raises:
+                dialog = QtGui.QMessageBox.critical(self,
+                        # 'Invalid user' dialog title.
+                        _('Cannot show user.'),
+                        # 'Invalid user' dialog content.
+                        _('This user does not exist on the server. '
+                          'Check your input.'))
             return
-        id_ = 'showuser_' + people.userid
-        if id_ not in self._tabs:
+        if people.userid not in self._tabs['showuser']:
             title = people.userid
             widget = PeopleWidget(self, people, with_entries=True)
             value = (widget, title)
-            self._tabs[id_] = value
+            self._tabs['showuser'][people.userid] = value
             self.centralWidget().addTab(*value)
         self.centralWidget().setCurrentIndex(
-                self.centralWidget().indexOf(self._tabs[id_][0]))
+                self.centralWidget().indexOf(
+                    self._tabs['showuser'][people.userid][0]))
 
     def closetab_slot(self, index):
         widget = self.centralWidget().widget(index)
-        for key, value in self._tabs.items():
+        for key, value in self._tabs['main'].items():
             if value[0] == widget:
-                self.closetab(key)
+                self.closemaintab(key)
                 if key in self._actions['openclosetab']:
                     self._actions['openclosetab'][key].setChecked(False)
                 break
+        for key, value in self._tabs['showuser'].items():
+            if value[0] == widget:
+                self.close_showuser_tab(key)
+                break
 
-    def opentab(self, id_, **kwargs):
+    def openmaintab(self, id_, **kwargs):
         if id_ == 'timeline':
             # Title of tab containing the timeline.
             title = _('Timeline')
@@ -199,16 +210,24 @@ class MainWindow(QtGui.QMainWindow):
                     .fetch()
             value = (ScrollableEntryListWidget(self, entries), title)
             self.centralWidget().addTab(*value)
-        self._tabs[id_] = value
+        self._tabs['main'][id_] = value
         self.centralWidget().addTab(*value)
 
-    def closetab(self, id_):
-        log.debug('Closing tab %s.' % id_)
-        if id_ not in self._tabs: # Already removed:
+    def closemaintab(self, id_):
+        log.debug('Closing main tab %s.' % id_)
+        if id_ not in self._tabs['main']: # Already removed:
             return
-        index = self.centralWidget().indexOf(self._tabs[id_][0])
+        index = self.centralWidget().indexOf(self._tabs['main'][id_][0])
         self.centralWidget().removeTab(index)
-        del self._tabs[id_]
+        del self._tabs['main'][id_]
+
+    def close_showuser_tab(self, id_):
+        log.debug('Closing show tab %s' % id_)
+        if id_ not in self._tabs['showuser']: # Already removed
+            return
+        index = self.centralWidget().indexOf(self._tabs['showuser'][id_][0])
+        self.centralWidget().removeTab(index)
+        del self._tabs['showuser'][id_]
 
     def closeEvent(self, event):
         self._save_geometry()
