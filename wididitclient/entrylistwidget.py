@@ -18,7 +18,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-__all__ = ['EntryListWidget', 'ScrollableEntryListWidget']
+__all__ = ['EntryListWidget', 'ScrollableEntryListWidget',
+        'EntryListItemWidget']
 
 from PyQt4 import QtGui
 
@@ -46,19 +47,24 @@ class EntryListLayout(QtGui.QVBoxLayout):
         size_policy.setHorizontalPolicy(QtGui.QSizePolicy.Expanding)
 
         for entry in entries:
-            item = QtGui.QFrame()
-            item.setStyleSheet('background-color: white;');
-            item.setSizePolicy(size_policy)
-            item.setLayout(EntryListWidgetItem(entry))
-            self.addWidget(item)
+            widget = EntryListItemWidget(entry)
+            widget.setSizePolicy(size_policy)
+            self.addWidget(widget)
 
         # Take all the trailing space at the end of the scrollarea.
         widget = QtGui.QWidget()
         self.addWidget(widget)
 
-class EntryListWidgetItem(QtGui.QGridLayout):
+class EntryListItemWidget(QtGui.QFrame):
+    def __init__(self, entry, parent=None):
+        super(EntryListItemWidget, self).__init__(parent)
+
+        self.setStyleSheet('background-color: white;');
+        self.setLayout(EntryListItemLayout(entry))
+
+class EntryListItemLayout(QtGui.QGridLayout):
     def __init__(self, entry):
-        super(EntryListWidgetItem, self).__init__()
+        super(EntryListItemLayout, self).__init__()
 
         from wididitclient.peoplewidget import AuthorWidget
 
