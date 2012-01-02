@@ -121,16 +121,11 @@ class LoginWindow(QtGui.QMainWindow):
         else:
             log.info('Invalid userid or password. Asking authentication again.')
 
-            dialog = QtGui.QDialog(self)
-            # Message displayed when authentication failed.
-            label = QtGui.QLabel(_('Invalid userid or password. Try again.'))
-            # Close the "authentication failed" dialog.
-            close = QtGui.QPushButton(_('Close'))
-            close.clicked.connect(dialog.accept)
-            dialog.setLayout(QtGui.QVBoxLayout())
-            dialog.layout().addWidget(label)
-            dialog.layout().addWidget(close)
-            dialog.show()
+            dialog = QtGui.QMessageBox.critical(self,
+                    # 'Login failed' dialog title.
+                    _('Connot connect.'),
+                    # 'Login failed' dialog content.
+                    _('Invalid userid or password. Try again.'))
 
     def closeEvent(self, event):
         self._save_geometry()
